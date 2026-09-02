@@ -23,6 +23,11 @@ function initTabs() {
       document.querySelectorAll(".tab-panel").forEach((p) => p.classList.remove("active"));
       btn.classList.add("active");
       document.getElementById("tab-" + btn.dataset.tab).classList.add("active");
+      // Chart.js can't size a canvas while its tab panel is display:none,
+      // so re-measure once the panel actually becomes visible.
+      if (btn.dataset.tab === "programs") {
+        [fundChartInstance, reachChartInstance].forEach((c) => c && c.resize());
+      }
     });
   });
 }
@@ -182,10 +187,13 @@ function renderPrograms() {
 }
 
 // ---------------- Charts ----------------
+let fundChartInstance = null;
+let reachChartInstance = null;
+
 function renderCharts() {
   const labels = PROGRAMS.map((p) => p.name);
 
-  new Chart(document.getElementById("fundChart"), {
+  fundChartInstance = new Chart(document.getElementById("fundChart"), {
     type: "bar",
     data: {
       labels,
@@ -201,7 +209,7 @@ function renderCharts() {
     },
   });
 
-  new Chart(document.getElementById("reachChart"), {
+  reachChartInstance = new Chart(document.getElementById("reachChart"), {
     type: "doughnut",
     data: {
       labels,
