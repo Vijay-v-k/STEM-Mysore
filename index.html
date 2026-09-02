@@ -30,11 +30,32 @@
     <section id="tab-map" class="tab-panel active">
       <div class="panel-head">
         <h2>Mysore District — Block-wise View</h2>
-        <p class="muted">Click any block to view its education snapshot. Layout is illustrative (not precise GIS boundaries) — placeholder data shown, replace via <code>js/data.js</code>.</p>
+        <p class="muted">Click any block to view its education snapshot. Schools &amp; students are real (Govt.-schools sheet, 31 Jul 2025); teachers are real but unverified; STEM labs, girls' enrollment, dropout, literacy and KPI score are still placeholder — see <code>js/data.js</code>.</p>
       </div>
       <div class="map-wrap">
         <div class="map-stage" id="mapStage">
-          <!-- blocks injected by app.js -->
+          <div class="map-topline">
+            <span class="map-inset" aria-hidden="true">
+              <svg viewBox="0 0 60 70" class="inset-svg">
+                <path d="M10 6 L30 3 L48 10 L52 22 L46 34 L50 48 L40 60 L24 66 L12 58 L6 44 L10 30 Z" class="inset-state" />
+                <circle cx="26" cy="34" r="3.4" class="inset-dot" />
+              </svg>
+              <span class="map-inset-label">KARNATAKA</span>
+            </span>
+            <span class="map-compass" aria-hidden="true">
+              <svg viewBox="0 0 40 40">
+                <polygon points="20,3 25,20 20,16 15,20" class="compass-n"></polygon>
+                <polygon points="20,37 25,20 20,24 15,20" class="compass-s"></polygon>
+                <text x="20" y="14" class="compass-label">N</text>
+              </svg>
+            </span>
+          </div>
+          <!-- taluk polygons injected by app.js from BLOCKS + BLOCK_SHAPES -->
+          <svg id="mapSvg" viewBox="0 0 390 300" class="map-svg" role="img" aria-label="Mysore district taluk map"></svg>
+          <div class="scale-bar" aria-hidden="true">
+            <div class="scale-line"></div>
+            <div class="scale-ticks"><span>0</span><span>15</span><span>30 Kilometers</span></div>
+          </div>
         </div>
         <aside class="map-legend">
           <h3>District Summary</h3>
@@ -53,7 +74,7 @@
     <section id="tab-team" class="tab-panel">
       <div class="panel-head">
         <h2>Team Members — KPIs, Targets &amp; Achievements</h2>
-        <p class="muted">Placeholder team &amp; performance data — replace via <code>js/data.js</code> once real figures are available.</p>
+        <p class="muted">Names, roles and (for Madhu R, Shivaraju, Narasimharaju) KPI targets are real, from the team's AY 2026-27 KRA sheet. "Achieved" values are placeholder until monthly tracking data is added — see <code>js/data.js</code>.</p>
       </div>
       <div class="team-grid" id="teamGrid"></div>
     </section>
@@ -62,7 +83,7 @@
     <section id="tab-programs" class="tab-panel">
       <div class="panel-head">
         <h2>School Improvement Programs</h2>
-        <p class="muted">Utilization, reach, fund spent and impact per program — placeholder data.</p>
+        <p class="muted">Program names &amp; budget allocated are real (AY 2026-27 budget sheet). Utilization, fund spent, reach and impact are placeholder — see <code>js/data.js</code>.</p>
       </div>
       <div class="programs-charts">
         <div class="chart-card">
@@ -70,7 +91,7 @@
           <canvas id="fundChart" height="220"></canvas>
         </div>
         <div class="chart-card">
-          <h3>Reach (Schools) by Program</h3>
+          <h3>Budget Allocated by Program (₹ Lakhs, AY 2026-27)</h3>
           <canvas id="reachChart" height="220"></canvas>
         </div>
       </div>

@@ -45,29 +45,66 @@ function kpiLabel(score) {
 }
 
 // ---------------- Map tab ----------------
+// Hand-drawn polygon points (390x300 viewBox) approximating each
+// taluk's real position/shape & adjacency, traced from the district
+// reference map (K.R. Nagara / Periyapatna / Hunsur / Mysore /
+// T. Narasipura / Nanjangud / H.D. Kote). Illustrative, not GIS-grade.
+const SVG_NS = "http://www.w3.org/2000/svg";
+const BLOCK_SHAPES = {
+  krnagara:    { points: "195,20 255,55 210,105 150,60",                       label: [205, 46] },
+  periyapatna: { points: "150,60 70,75 35,165 140,150",                        label: [88, 108] },
+  hunsur:      { points: "150,60 210,105 230,165 160,205 140,150",             label: [178, 140] },
+  mysuru:      { points: "210,105 255,55 300,120 255,215 230,165",             label: [253, 140] },
+  tnarasipura: { points: "300,120 355,150 340,220 255,215",                    label: [307, 172] },
+  nanjangud:   { points: "230,165 255,215 340,220 275,280 185,250 160,205",    label: [252, 245] },
+  hdkote:      { points: "35,165 140,150 160,205 185,250 95,275 30,210",       label: [102, 218] },
+};
+
 function renderMap() {
-  const stage = document.getElementById("mapStage");
-  stage.innerHTML = "";
+  const svg = document.getElementById("mapSvg");
+  svg.innerHTML = "";
 
   BLOCKS.forEach((block) => {
-    const node = document.createElement("button");
-    node.className = "block-node" + (block.id === "mysuru" ? " mysuru" : "");
-    node.style.left = block.x + "%";
-    node.style.top = block.y + "%";
-    node.setAttribute("aria-label", "View details for " + block.name);
+    const shape = BLOCK_SHAPES[block.id];
+    if (!shape) return;
 
-    const shape = document.createElement("div");
-    shape.className = "block-shape " + kpiClass(block.kpiScore);
-    shape.textContent = block.kpiScore;
+    const poly = document.createElementNS(SVG_NS, "polygon");
+    poly.setAttribute("points", shape.points);
+    poly.setAttribute("class", "taluk-shape " + kpiClass(block.kpiScore));
+    poly.setAttribute("tabindex", "0");
+    poly.setAttribute("role", "button");
+    poly.setAttribute("aria-label", "View details for " + block.name);
+    poly.addEventListener("click", () => openBlockModal(block));
+    poly.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openBlockModal(block); }
+    });
+    svg.appendChild(poly);
 
-    const label = document.createElement("span");
-    label.className = "block-label";
+    const [lx, ly] = shape.label;
+
+    const badge = document.createElementNS(SVG_NS, "circle");
+    badge.setAttribute("cx", lx);
+    badge.setAttribute("cy", ly - 12);
+    badge.setAttribute("r", 11);
+    badge.setAttribute("class", "taluk-badge");
+    badge.setAttribute("pointer-events", "none");
+    svg.appendChild(badge);
+
+    const score = document.createElementNS(SVG_NS, "text");
+    score.setAttribute("x", lx);
+    score.setAttribute("y", ly - 8);
+    score.setAttribute("class", "taluk-score");
+    score.setAttribute("pointer-events", "none");
+    score.textContent = block.kpiScore;
+    svg.appendChild(score);
+
+    const label = document.createElementNS(SVG_NS, "text");
+    label.setAttribute("x", lx);
+    label.setAttribute("y", ly + 14);
+    label.setAttribute("class", "taluk-label");
+    label.setAttribute("pointer-events", "none");
     label.textContent = block.name.split(" (")[0];
-
-    node.appendChild(shape);
-    node.appendChild(label);
-    node.addEventListener("click", () => openBlockModal(block));
-    stage.appendChild(node);
+    svg.appendChild(label);
   });
 }
 
@@ -75,7 +112,7 @@ function openBlockModal(block) {
   const body = document.getElementById("modalBody");
   body.innerHTML = `
     <h2>${block.name}</h2>
-    <p class="modal-sub">Block education snapshot &middot; placeholder data</p>
+    <p class="modal-sub">Schools &amp; students: real (31 Jul 2025) &middot; teachers: real, unverified &middot; rest: placeholder</p>
     <div class="stat-grid">
       <div class="stat-box"><div class="num">${block.schools.toLocaleString()}</div><div class="lbl">Schools</div></div>
       <div class="stat-box"><div class="num">${block.students.toLocaleString()}</div><div class="lbl">Students Enrolled</div></div>
@@ -168,8 +205,10 @@ function renderPrograms() {
     const card = document.createElement("div");
     card.className = "program-card";
     const reachText = p.reachStudents > 0
-      ? `${p.reachSchools} schools / ${p.reachStudents.toLocaleString()} students`
-      : `${p.reachSchools} schools`;
+      ? `${p.reachSchools.toLocaleString()} schools / ${p.reachStudents.toLocaleString()} students`
+      : p.reachSchools > 0
+        ? `${p.reachSchools.toLocaleString()} schools`
+        : "District-wide";
 
     card.innerHTML = `
       <h3>${p.name}</h3>
@@ -215,8 +254,8 @@ function renderCharts() {
       labels,
       datasets: [
         {
-          data: PROGRAMS.map((p) => p.reachSchools),
-          backgroundColor: ["#1d5b3f", "#2f8a5f", "#5cab7f", "#e08a2b", "#e0a92b", "#d1495b"],
+          data: PROGRAMS.map((p) => p.fundAllocated),
+          backgroundColor: ["#1d5b3f", "#2f8a5f", "#5cab7f", "#e08a2b", "#e0a92b", "#d1495b", "#8a6fd6"],
         },
       ],
     },

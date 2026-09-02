@@ -8,15 +8,15 @@ A frontend dashboard for the STEM Mysore program, with three tabs:
 
 ## Data
 
-All data currently in the app is **placeholder / dummy data** for demonstration, defined in [`js/data.js`](js/data.js):
+[`js/data.js`](js/data.js) is a **mix of real and placeholder data** — every field has an inline `// REAL` or `// PLACEHOLDER` comment so it's clear what to trust today:
 
-- `BLOCKS` — one entry per Mysore district taluk (map tab)
-- `TEAM_MEMBERS` — one entry per team member, each with a list of KPIs (team tab)
-- `PROGRAMS` — one entry per school improvement program (programs tab)
+- `BLOCKS` (map tab) — schools & students per taluk are real (Govt.-schools sheet, 31 Jul 2025); teachers is real but unverified (source table headers were merged/misaligned); STEM labs, girls' enrollment, dropout rate, literacy rate and KPI score are placeholder.
+- `TEAM_MEMBERS` (team tab) — names, roles and (for Madhu R, Shivaraju, Narasimharaju) KPI *targets* are real, from the team's AY 2026-27 KRA doc. All "achieved" values are placeholder — the sheet has annual targets but no monthly-tracked actuals. Hanumanthraju has no KRA table in the sheet, so his KPIs are fully placeholder.
+- `PROGRAMS` (programs tab) — program name & fund allocated are real (AY 2026-27 budget lines); utilization, fund spent, reach and impact are placeholder.
 
-Replace the values in that file with real data — no other file needs to change since the map, team, and program views are all rendered from these three arrays.
+Replace placeholder values in that file as real numbers become available — no other file needs to change since the map, team, and program views are all rendered from these three arrays.
 
-The map layout (`x`/`y` per block in `BLOCKS`) is an illustrative approximation of relative taluk positions, not a precise GIS boundary map.
+The map shapes (`BLOCK_SHAPES` in [`js/app.js`](js/app.js)) are hand-traced polygons approximating the real taluk boundaries/adjacency from the district reference map — illustrative, not GIS-precise.
 
 ## Running locally
 
