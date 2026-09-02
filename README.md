@@ -30,3 +30,7 @@ python -m http.server 8000
 ## Tech
 
 Vanilla HTML/CSS/JS + [Chart.js](https://www.chartjs.org/) (via CDN). No framework, no build tooling.
+
+## Deploying updates (GitHub Pages caching)
+
+`index.html` loads `css/style.css`, `js/data.js` and `js/app.js` with a `?v=N` query string. GitHub Pages' CDN (and browsers) cache those files hard by URL, so an edit to one of them can silently not show up for visitors on the live site. **Whenever you edit `style.css`, `data.js` or `app.js`, bump the `?v=` number on its `<script>`/`<link>` tag in `index.html`** so the live site picks up the change immediately.
