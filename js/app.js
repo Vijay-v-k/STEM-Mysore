@@ -9,7 +9,6 @@ document.addEventListener("DOMContentLoaded", () => {
   renderDistrictSummary();
   renderTeam();
   renderPrograms();
-  renderCharts();
   document.getElementById("lastUpdated").textContent =
     "Last updated: " + new Date().toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" });
 });
@@ -23,10 +22,11 @@ function initTabs() {
       document.querySelectorAll(".tab-panel").forEach((p) => p.classList.remove("active"));
       btn.classList.add("active");
       document.getElementById("tab-" + btn.dataset.tab).classList.add("active");
-      // Chart.js can't size a canvas while its tab panel is display:none,
-      // so re-measure once the panel actually becomes visible.
-      if (btn.dataset.tab === "programs") {
-        [fundChartInstance, reachChartInstance].forEach((c) => c && c.resize());
+      // Chart.js can only size a canvas once its tab panel is actually
+      // visible (not display:none), so build the charts lazily on first
+      // visit to this tab rather than at page load.
+      if (btn.dataset.tab === "programs" && !fundChartInstance) {
+        renderCharts();
       }
     });
   });
