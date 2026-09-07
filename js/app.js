@@ -28,6 +28,9 @@ function initTabs() {
       if (btn.dataset.tab === "programs" && !fundChartInstance) {
         renderCharts();
       }
+      if (btn.dataset.tab === "science" && window.initScienceTab) {
+        window.initScienceTab();
+      }
     });
   });
 }

@@ -7,7 +7,7 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎓</text></svg>" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=2" />
+  <link rel="stylesheet" href="css/style.css?v=3" />
 </head>
 <body>
   <header class="topbar">
@@ -22,6 +22,7 @@
       <button class="tab-btn active" data-tab="map">Mysore Map</button>
       <button class="tab-btn" data-tab="team">Team &amp; KPIs</button>
       <button class="tab-btn" data-tab="programs">School Programs</button>
+      <button class="tab-btn" data-tab="science">Science Activities</button>
     </nav>
   </header>
 
@@ -97,6 +98,78 @@
       </div>
       <div class="programs-grid" id="programsGrid"></div>
     </section>
+
+    <!-- SCIENCE ACTIVITIES TAB -->
+    <section id="tab-science" class="tab-panel">
+      <div class="panel-head">
+        <h2>Science Activities — CRP Observations</h2>
+        <p class="muted">
+          Live from the <strong>STEM Observation – CRP Mysore</strong> Google Form responses.
+          <span id="scienceLiveBadge" class="live-badge" hidden><span class="live-dot"></span>Live</span>
+        </p>
+      </div>
+
+      <div id="scienceNotice" class="notice" hidden></div>
+
+      <div class="science-toolbar">
+        <div class="filter-group">
+          <label for="blockFilter">Block</label>
+          <select id="blockFilter"><option value="">All Blocks</option></select>
+        </div>
+        <div class="filter-group">
+          <label for="monthFilter">Month</label>
+          <select id="monthFilter"><option value="">All Months</option></select>
+        </div>
+        <button id="scienceResetBtn" class="btn-ghost" type="button">Reset filters</button>
+        <div class="toolbar-spacer"></div>
+        <span id="scienceSyncedAt" class="synced-at muted"></span>
+        <button id="scienceRefreshBtn" class="btn-ghost" type="button">↻ Refresh now</button>
+      </div>
+
+      <div class="summary-cards science-kpis" id="scienceKpis"></div>
+
+      <div class="programs-charts">
+        <div class="chart-card">
+          <h3>Activities by Block</h3>
+          <canvas id="scienceBlockChart" height="220"></canvas>
+        </div>
+        <div class="chart-card">
+          <h3>Students Reached by Block</h3>
+          <canvas id="scienceStudentsChart" height="220"></canvas>
+        </div>
+      </div>
+      <div class="programs-charts">
+        <div class="chart-card">
+          <h3>Activity Reports Over Time</h3>
+          <canvas id="scienceTrendChart" height="220"></canvas>
+        </div>
+        <div class="chart-card">
+          <h3 id="scienceClusterTitle">Top Clusters</h3>
+          <canvas id="scienceClusterChart" height="220"></canvas>
+        </div>
+      </div>
+
+      <div class="panel-head" style="margin-top: 8px;">
+        <h3 style="font-family:'Poppins','Inter',sans-serif;">Recent Submissions</h3>
+      </div>
+      <div class="table-wrap">
+        <table class="science-table" id="scienceTable">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Block</th>
+              <th>Cluster</th>
+              <th>School</th>
+              <th>Class</th>
+              <th>Activities</th>
+              <th>Students</th>
+              <th>Month</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
   </main>
 
   <footer>
@@ -112,7 +185,9 @@
   </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.5.0/chart.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
   <script src="js/data.js?v=2"></script>
-  <script src="js/app.js?v=2"></script>
+  <script src="js/app.js?v=3"></script>
+  <script src="js/science.js?v=1"></script>
 </body>
 </html>
