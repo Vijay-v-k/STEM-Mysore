@@ -1,0 +1,503 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mysuru PTM Review</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&family=Noto+Sans+Kannada:wght@400;600&display=swap">
+<style>
+body{margin:0}
+
+/* Layout: drop-down filter bar -> KPI strip -> highest/lowest summary -> mixed chart grid -> tables. Each chart owns one hue; green/red mark highest/lowest. */
+:root{
+  --bg:#f3f5f8; --surface:#ffffff; --ink:#101820; --ink2:#4a5361; --muted:#7b8494;
+  --grid:#e3e6ea; --base:#c5cad2; --line:rgba(16,24,32,.10);
+  --accent:#1c5cab; --accent-soft:#e3eefb; --accent-ink:#ffffff;
+  --c1:#2a78d6; --c2:#eb6834; --c3:#1baf7a; --c4:#eda100; --c5:#e87ba4; --c6:#008300; --c7:#4a3aa7; --c8:#e34948;
+  --q1:#86b6ef; --q2:#5598e7; --q3:#2a78d6; --q4:#1c5cab; --q5:#104281;
+  --na:#c9cdd3;
+  --good:#0ca30c; --good-ink:#006300; --good-soft:#e2f4e2; --warn:#b67a00; --crit:#d03b3b; --crit-soft:#fbe9e9; --warn-soft:#fdf3dc;
+  --f-ui:"Noto Sans","Noto Sans Kannada",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-kn:"Noto Sans Kannada","Noto Sans",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0e1013; --surface:#171a1f; --ink:#f1f3f6; --ink2:#b8bfca; --muted:#8a919c;
+  --grid:#272c33; --base:#3a4049; --line:rgba(255,255,255,.10);
+  --accent:#5598e7; --accent-soft:#1b2a3d; --accent-ink:#0e1013;
+  --c1:#3987e5; --c2:#d95926; --c3:#199e70; --c4:#c98500; --c5:#d55181; --c6:#008300; --c7:#9085e9; --c8:#e66767;
+  --q1:#184f95; --q2:#1c5cab; --q3:#2a78d6; --q4:#5598e7; --q5:#86b6ef;
+  --na:#4a5059;
+  --good:#0ca30c; --good-ink:#3fc43f; --good-soft:#15301a; --warn:#fab219; --crit:#e66767; --crit-soft:#3a1d1d; --warn-soft:#3a2f12; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e1013; --surface:#171a1f; --ink:#f1f3f6; --ink2:#b8bfca; --muted:#8a919c;
+  --grid:#272c33; --base:#3a4049; --line:rgba(255,255,255,.10);
+  --accent:#5598e7; --accent-soft:#1b2a3d; --accent-ink:#0e1013;
+  --c1:#3987e5; --c2:#d95926; --c3:#199e70; --c4:#c98500; --c5:#d55181; --c6:#008300; --c7:#9085e9; --c8:#e66767;
+  --q1:#184f95; --q2:#1c5cab; --q3:#2a78d6; --q4:#5598e7; --q5:#86b6ef;
+  --na:#4a5059;
+  --good:#0ca30c; --good-ink:#3fc43f; --good-soft:#15301a; --warn:#fab219; --crit:#e66767; --crit-soft:#3a1d1d; --warn-soft:#3a2f12; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-ui);font-size:14px;line-height:1.45}
+.wrap{max-width:1320px;margin:0 auto;padding-inline:20px;padding-block:20px 48px}
+header.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:14px}
+header.top h1{font-size:24px;line-height:1.2;margin:0;font-weight:700;text-wrap:balance}
+header.top .kn{font-family:var(--f-kn);color:var(--ink2);font-size:14px}
+header.top .meta{color:var(--muted);font-size:12.5px;text-align:right}
+.filters{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;box-shadow:0 4px 14px rgba(0,0,0,.06)}
+.fld{display:grid;gap:4px;min-width:0;flex:1 1 170px}
+.fld label{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+select,input[type=search]{font:inherit;font-size:13.5px;color:var(--ink);background:var(--surface);border:1px solid var(--base);border-radius:8px;padding:7px 9px;width:100%;max-width:100%}
+select.on{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent);font-weight:600}
+.fact{display:flex;flex-direction:column;gap:6px;align-items:flex-end;flex:0 0 auto}
+.btn{font:inherit;font-size:13px;font-weight:600;border-radius:8px;padding:7px 16px;cursor:pointer;border:1px solid var(--crit);background:transparent;color:var(--crit)}
+.btn:hover{background:var(--crit-soft)}
+.status{font-size:12px;color:var(--ink2)}
+.status b{color:var(--ink)}
+.btn:focus-visible,th button:focus-visible,select:focus-visible,input:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:16px 0}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;min-width:0;border-top:3px solid var(--kc,var(--c1))}
+.kpi .lab{font-size:11.5px;color:var(--ink2);font-weight:500}
+.kpi .val{font-size:26px;font-weight:700;line-height:1.15;margin-top:4px}
+.kpi .sub{font-size:12px;color:var(--muted);margin-top:2px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;min-width:0}
+.card.wide{grid-column:1/-1}
+.card h2{font-size:15px;margin:0;font-weight:650;text-wrap:balance}
+.card .desc{font-size:12.5px;color:var(--ink2);margin:3px 0 12px}
+.kn{font-family:var(--f-kn)}
+@media (max-width:860px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.grid{grid-template-columns:minmax(0,1fr)}.filters{position:static}}
+svg text{fill:var(--muted);font-size:11px;font-family:var(--f-ui)}
+svg text.val{fill:var(--ink);font-weight:600;font-size:11.5px}
+svg text.hi{fill:var(--good-ink);font-weight:700;font-size:10px;letter-spacing:.04em}
+svg text.lo{fill:var(--crit);font-weight:700;font-size:10px;letter-spacing:.04em}
+svg .click{cursor:pointer}
+svg .click:hover rect.bar{opacity:.8}
+.hl-legend{display:flex;flex-wrap:wrap;gap:14px;font-size:12px;color:var(--ink2);margin-top:6px}
+.hl-legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+/* lollipop */
+.lp{display:grid;gap:4px}
+.lp .r{display:grid;grid-template-columns:minmax(90px,150px) 1fr 74px;align-items:center;gap:8px;padding:3px 4px;border-radius:6px}
+.lp .r.click{cursor:pointer}.lp .r.click:hover{background:var(--accent-soft)}
+.lp .l{font-size:12.5px;color:var(--ink2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lp .t{position:relative;height:18px}
+.lp .t .stem{position:absolute;left:0;top:8px;height:2px;background:var(--lc);opacity:.55}
+.lp .t .dot{position:absolute;top:3px;width:12px;height:12px;border-radius:50%;background:var(--lc);transform:translateX(-6px);box-shadow:0 0 0 2px var(--surface)}
+.lp .t .avg{position:absolute;top:-3px;bottom:-3px;border-left:1.5px dashed var(--muted)}
+.lp .v{font-size:12.5px;font-variant-numeric:tabular-nums;font-weight:600;text-align:right;white-space:nowrap}
+.lp .r.hi .v{color:var(--good-ink)}.lp .r.lo .v{color:var(--crit)}
+.lp .r.hi{background:var(--good-soft)}.lp .r.lo{background:var(--crit-soft)}
+/* horizontal bars (topics) */
+.hb{display:grid;gap:8px}
+.hb .r{display:grid;grid-template-columns:1fr 52px;gap:2px 10px;align-items:center}
+.hb .l{grid-column:1/-1;font-size:12.5px}
+.hb .l small{display:block;color:var(--muted);font-family:var(--f-kn);font-size:11.5px}
+.hb .t{height:14px;background:var(--grid);border-radius:4px;overflow:hidden}
+.hb .b{height:100%;border-radius:0 4px 4px 0}
+.hb .v{font-size:12.5px;font-weight:600;text-align:right;font-variant-numeric:tabular-nums}
+/* donut */
+.donut{display:flex;flex-wrap:wrap;gap:16px;align-items:center}
+.donut svg{flex:0 0 180px;max-width:180px}
+.donut ul{list-style:none;margin:0;padding:0;display:grid;gap:5px;flex:1 1 180px;min-width:0}
+.donut li{display:grid;grid-template-columns:12px 1fr auto auto;gap:8px;align-items:center;font-size:12.5px}
+.donut li i{width:12px;height:12px;border-radius:3px}
+.donut li .n{font-variant-numeric:tabular-nums;font-weight:600}
+.donut li .p{color:var(--muted);font-variant-numeric:tabular-nums;min-width:36px;text-align:right}
+/* gauges */
+.gauges{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.gauge{text-align:center;min-width:0}
+.gauge .gl{font-size:12.5px;color:var(--ink2);margin-top:-4px}
+.gauge .gs{font-size:11.5px;color:var(--muted)}
+@media (max-width:640px){.gauges{grid-template-columns:repeat(2,minmax(0,1fr))}}
+/* heatmap */
+.heat td.c{text-align:center;font-variant-numeric:tabular-nums;font-weight:600;min-width:84px}
+.heat td.c.hi{box-shadow:inset 0 0 0 2px var(--good)}
+.heat td.c.lo{box-shadow:inset 0 0 0 2px var(--crit)}
+.heat td.c small{font-size:10px;margin-left:3px}
+/* extremes */
+.ext{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px}
+.ext .m{border:1px solid var(--line);border-radius:8px;padding:10px 12px;display:grid;gap:6px;background:var(--bg)}
+.ext .mt{font-size:12px;font-weight:600;color:var(--ink2)}
+.ext .row{display:flex;justify-content:space-between;gap:8px;font-size:12.5px;align-items:baseline}
+.ext .row span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ext .row b{font-variant-numeric:tabular-nums}
+.tag{font-size:10px;font-weight:700;letter-spacing:.04em;border-radius:4px;padding:1px 5px;margin-right:6px}
+.tag.hi{background:var(--good-soft);color:var(--good-ink)}.tag.lo{background:var(--crit-soft);color:var(--crit)}
+/* tables */
+.tablebox{overflow:auto;max-height:520px;border:1px solid var(--line);border-radius:8px}
+table{border-collapse:collapse;width:100%;font-size:12.5px}
+th,td{padding:7px 9px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+thead th{position:sticky;top:0;background:var(--surface);z-index:1;box-shadow:0 1px 0 var(--base)}
+th button{all:unset;cursor:pointer;font-weight:600;color:var(--ink2);font-size:12px}
+th button[data-dir]::after{content:attr(data-dir);margin-left:4px;color:var(--accent)}
+tbody tr:hover{background:var(--accent-soft)}
+td.school{white-space:normal;min-width:180px}
+.pill{display:inline-block;font-size:11px;font-weight:600;border-radius:999px;padding:1px 8px;margin:1px 3px 1px 0}
+.pill.c{background:var(--crit-soft);color:var(--crit)}
+.pill.w{background:var(--warn-soft);color:var(--warn)}
+.pill.ok{color:var(--good-ink)}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px}
+.toolbar input{max-width:320px}
+.flagsum{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px;margin-bottom:12px}
+.flagsum button{font:inherit;text-align:left;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:8px;padding:9px 11px;cursor:pointer}
+.flagsum button[aria-pressed="true"]{border-color:var(--crit);box-shadow:inset 0 0 0 1px var(--crit)}
+.flagsum .fv{font-size:20px;font-weight:700;display:block}
+.flagsum .fl{font-size:12px;color:var(--ink2)}
+.note{font-size:12px;color:var(--muted);margin-top:10px}
+#tip{position:fixed;z-index:50;pointer-events:none;background:var(--ink);color:var(--bg);font-size:12px;line-height:1.4;padding:7px 9px;border-radius:7px;max-width:280px;box-shadow:0 4px 14px rgba(0,0,0,.18)}
+.empty{color:var(--muted);font-size:13px;padding:14px 0}
+@media (prefers-reduced-motion:no-preference){.hb .b{transition:width .25s ease}}
+
+/* When shown inside the STEM Mysore "PTM Review" tab: blend into the host page */
+html.embedded{overflow:hidden}
+html.embedded body{background:transparent}
+html.embedded .wrap{padding-inline:0;padding-block:0 8px;max-width:none}
+html.embedded .filters{position:static}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>Parent–Teacher Meeting Review, Mysuru District</h1>
+      <div class="kn">ಪೋಷಕರ ಸಭೆ ಪರಿಶೀಲನೆ · ಡಯಟ್ ಮೈಸೂರು</div>
+    </div>
+    <div class="meta">PTM held 01.10.2026 · Source: PTM Mysore (Responses)<br><span id="totalNote"></span></div>
+  </header>
+
+  <section class="filters" aria-label="Filters">
+    <div class="fld"><label for="fBlock">Block</label><select id="fBlock"></select></div>
+    <div class="fld"><label for="fCluster">Cluster</label><select id="fCluster"></select></div>
+    <div class="fld"><label for="fResp">Respondent type</label><select id="fResp"></select></div>
+    <div class="fld"><label for="fType">School type</label><select id="fType"></select></div>
+    <div class="fact"><span class="status" id="status"></span><button class="btn" id="reset" type="button">Reset filters</button></div>
+  </section>
+
+  <section class="kpis" id="kpis" aria-label="Key figures"></section>
+
+  <section class="grid">
+    <div class="card wide"><h2 id="hExt">Highest and lowest blocks</h2><p class="desc">For each measure, the best and weakest performer under the current filters.</p><div class="ext" id="cExt"></div></div>
+    <div class="card wide"><h2>District at a glance</h2><p class="desc">Share of reporting schools, under the current filters.</p><div class="gauges" id="cGauges"></div></div>
+    <div class="card"><h2>Parents who attended</h2><p class="desc" id="dParents"></p><div id="cParents"></div></div>
+    <div class="card"><h2>Learning corners set up</h2><p class="desc" id="dLC"></p><div id="cLC"></div></div>
+    <div class="card"><h2>SDMC members per school</h2><p class="desc" id="dSDMC"></p><div id="cSDMC"></div></div>
+    <div class="card"><h2>SDMC attendance spread</h2><p class="desc">Schools grouped by how many SDMC members were present.</p><div id="cSDMCdist"></div></div>
+    <div class="card"><h2>Student attendance on PTM day</h2><p class="desc" id="dAtt"></p><div id="cAtt"></div></div>
+    <div class="card"><h2>Parents per 100 students</h2><p class="desc" id="dRatio"></p><div id="cRatio"></div></div>
+    <div class="card wide"><h2>Activity scorecard</h2><p class="desc" id="dHeat"></p><div class="tablebox" id="cHeat"></div></div>
+    <div class="card"><h2>Who submitted the reports</h2><p class="desc">Reports by designation of the visiting official.</p><div id="cResp"></div></div>
+    <div class="card"><h2>By school type</h2><p class="desc">Average per school for lower primary, higher primary and high schools.</p><div id="cType"></div></div>
+    <div class="card wide"><h2>Topics discussed in the meeting</h2><p class="desc">Share of reported PTMs where each topic was covered. One PTM can cover several topics.</p><div id="cTopics"></div></div>
+    <div class="card wide"><h2>Enrolment vs parents attended</h2><p class="desc">Each dot is a school, coloured by school type. Dots above the dashed line had more parents present than enrolled students.</p><div id="cScatter"></div></div>
+    <div class="card wide"><h2 id="hGroup">Block summary</h2><p class="desc">Click a column heading to sort.</p><div class="tablebox" id="tGroup"></div></div>
+    <div class="card wide"><h2>Schools needing follow-up</h2><p class="desc">Click a flag to list those schools. Search by school name, UDISE code or cluster.</p>
+      <div class="flagsum" id="flagsum"></div>
+      <div class="toolbar"><input type="search" id="q" placeholder="Search school, UDISE, cluster" aria-label="Search schools"><span class="status" id="schoolCount"></span></div>
+      <div class="tablebox" id="tSchools"></div>
+      <p class="note">Data checks: values that were not whole numbers (for example "63,617") are left out of totals. Rows where attendance or learning corners exceed enrolment are flagged as "Check data".</p>
+    </div>
+  </section>
+</div>
+<div id="tip" hidden></div>
+
+<script src="data.js?v=1"></script>
+<script>
+const D = window.PTM_DATA;
+if (window.self !== window.top) document.documentElement.classList.add("embedded");
+const TOPICS=[
+ ["Teachers analysed SA‑1 results with parents: learning progress and counselling","ಪೋಷಕರಿಗೆ ಮಕ್ಕಳ SA-1 ಮೌಲ್ಯಾಂಕನ ಆಧರಿಸಿ ಕಲಿಕಾ ಪ್ರಗತಿ ಚರ್ಚೆ"],
+ ["Parents' role in children's all-round development and school development","ಮಕ್ಕಳ ಸರ್ವಾಂಗೀಣ ಅಭಿವೃದ್ಧಿಯಲ್ಲಿ ಪೋಷಕರ ಪಾತ್ರ"],
+ ["Answer scripts and CC project work shared with students in front of parents","ಉತ್ತರ ಪತ್ರಿಕೆ ಹಾಗೂ ಪ್ರಾಜೆಕ್ಟ್ ವರ್ಕ್ ಪೋಷಕರ ಸಮ್ಮುಖದಲ್ಲಿ ಚರ್ಚೆ"],
+ ["Information on building a learning environment and learning activities","ಕಲಿಕಾ ಪರಿಸರ ನಿರ್ಮಾಣ & ಕಲಿಕಾ ಚಟುವಟಿಕೆಗಳ ಮಾಹಿತಿ"],
+ ["HM, teachers and SDMC made an action plan on overall school results","ಶಾಲೆಯ ಫಲಿತಾಂಶದ ಕುರಿತು ಕ್ರಿಯಾ ಯೋಜನೆ"],
+ ["Parents who built a learning environment were appreciated","ಕಲಿಕಾ ಪರಿಸರ ನಿರ್ಮಿಸಿದ ಪೋಷಕರಿಗೆ ಪ್ರಶಂಸೆ"],
+ ["Other topics (written in)","ಇತರೆ ವಿಷಯಗಳು"]
+];
+const TYPE_LABEL={LPS:"Lower primary",HPS:"Higher primary",HS:"High school"};
+const TYPE_COLOR={LPS:"var(--c1)",HPS:"var(--c2)",HS:"var(--c3)"};
+const fmt=n=>n==null||isNaN(n)?"–":Math.round(n).toLocaleString("en-IN");
+const f1=n=>n==null||isNaN(n)?"–":(Math.round(n*10)/10).toLocaleString("en-IN");
+const pct=n=>n==null||isNaN(n)?"–":Math.round(n*100)+"%";
+const title=s=>s.toLowerCase().replace(/\b\w/g,c=>c.toUpperCase());
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+const ROWS=D.rows.map((r,i)=>{const [blk,cl]=D.clusters[r[0]].split("|");
+  let resp=r[1]; if(/DIET/i.test(resp)) resp="DIET faculty";
+  const o={i,block:blk,cluster:title(cl),resp,type:r[2],school:r[3],udise:r[4],enr:r[5],pre:r[6],jatha:r[7],att:r[8],par:r[9],sdmc:r[10],lc:r[11],tb:r[12],jp:r[13],pp:r[14]};
+  o.bad=[o.enr,o.att,o.par,o.sdmc,o.lc].some(v=>v==null);
+  o.attHigh=o.att!=null&&o.enr!=null&&o.att>o.enr;
+  o.lcHigh=o.lc!=null&&o.enr!=null&&o.lc>o.enr;
+  return o;});
+const BLOCK_NAMES={"PERIYA PATNA":"Periyapatna","T. NARASIPURA":"T. Narasipura","MYSORE RURAL":"Mysuru Rural","HD KOTE":"H.D. Kote","NANJANAGUD":"Nanjangud","HUNSUR":"Hunsur","KR NAGARA":"K.R. Nagara","MYSORE NORTH":"Mysuru North","MYSORE SOUTH":"Mysuru South"};
+const bname=b=>BLOCK_NAMES[b]||title(b);
+const countBy=(arr,k)=>{const m=new Map();arr.forEach(o=>m.set(o[k],(m.get(o[k])||0)+1));return [...m].sort((a,b)=>b[1]-a[1]);};
+
+const S={block:null,resp:null,type:null,cluster:null,flag:null,q:"",sortG:{k:"par",d:-1},sortS:{k:"par",d:1}};
+try{const s=JSON.parse(localStorage.getItem("ptm-filters")||"null");if(s){S.block=s.block;S.resp=s.resp;S.type=s.type;S.cluster=s.cluster;}}catch(e){}
+const save=()=>{try{localStorage.setItem("ptm-filters",JSON.stringify({block:S.block,resp:S.resp,type:S.type,cluster:S.cluster}))}catch(e){}};
+
+function filtered(skip){
+  return ROWS.filter(o=>(skip==="block"||!S.block||o.block===S.block)&&(skip==="resp"||!S.resp||o.resp===S.resp)&&(skip==="type"||!S.type||o.type===S.type)&&(skip==="cluster"||!S.cluster||o.cluster===S.cluster));
+}
+function agg(rows){
+  const a={n:rows.length,enr:0,att:0,enrA:0,par:0,sdmc:0,lc:0,enrL:0,enrP:0,parP:0,pre:0,preA:0,jat:0,jatA:0,jp:0,pp:0,sdmcN:0,lcN:0,parN:0};
+  rows.forEach(o=>{if(o.enr!=null)a.enr+=o.enr;
+    if(o.att!=null&&o.enr!=null&&!o.attHigh){a.att+=o.att;a.enrA+=o.enr;}
+    if(o.par!=null){a.par+=o.par;a.parN++; if(o.enr){a.parP+=o.par;a.enrP+=o.enr;}}
+    if(o.sdmc!=null){a.sdmc+=o.sdmc;a.sdmcN++;}
+    if(o.lc!=null&&!o.lcHigh){a.lc+=o.lc;a.lcN++; if(o.enr)a.enrL+=o.enr;}
+    if(o.pre===1)a.pre++; if(o.pre!==-1)a.preA++;
+    if(o.jatha===1)a.jat++; if(o.jatha!==-1)a.jatA++;
+    a.jp+=o.jp;a.pp+=o.pp;});
+  a.attR=a.enrA?a.att/a.enrA:null; a.lcR=a.enrL?a.lc/a.enrL:null; a.parR=a.enrP?a.parP/a.enrP*100:null;
+  a.parAvg=a.parN?a.par/a.parN:null; a.sdmcAvg=a.sdmcN?a.sdmc/a.sdmcN:null; a.lcAvg=a.lcN?a.lc/a.lcN:null;
+  a.preR=a.preA?a.pre/a.preA:null; a.jatR=a.jatA?a.jat/a.jatA:null; a.ppR=a.n?a.pp/a.n:null; a.jpR=a.n?a.jp/a.n:null;
+  return a;
+}
+function groups(rows){
+  const key=S.block?"cluster":"block";
+  const m=new Map();rows.forEach(o=>{const k=o[key];if(!m.has(k))m.set(k,[]);m.get(k).push(o);});
+  return {key,list:[...m].map(([k,rs])=>({k,label:key==="block"?bname(k):k,a:agg(rs)}))};
+}
+// index of highest / lowest value (needs >= 2 distinct values)
+function extremes(vals){
+  let hi=-1,lo=-1;vals.forEach((v,i)=>{if(v==null||isNaN(v))return;if(hi<0||v>vals[hi])hi=i;if(lo<0||v<vals[lo])lo=i;});
+  return hi<0||vals[hi]===vals[lo]?{hi:-1,lo:-1}:{hi,lo};
+}
+const emptyMsg='<div class="empty">No reports match these filters.</div>';
+const hlLegend='<div class="hl-legend"><span><i style="background:var(--good)"></i>Highest</span><span><i style="background:var(--crit)"></i>Lowest</span></div>';
+
+// tooltip
+const tip=document.getElementById("tip");
+document.addEventListener("mousemove",e=>{const t=e.target.closest("[data-tip]");
+  if(!t){tip.hidden=true;return;} tip.innerHTML=t.dataset.tip;tip.hidden=false;
+  const w=tip.offsetWidth,h=tip.offsetHeight;let x=e.clientX+14,y=e.clientY+14;
+  if(x+w>innerWidth-8)x=e.clientX-w-14; if(y+h>innerHeight-8)y=e.clientY-h-14; tip.style.left=x+"px";tip.style.top=y+"px";});
+function bindClicks(el,sel,items,click){if(!click)return;el.querySelectorAll(sel).forEach(r=>{const go=()=>click(items[+r.dataset.i]);r.addEventListener("click",go);r.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();go();}});});}
+function niceMax(v){if(!v||v<=0)return 1;const p=Math.pow(10,Math.floor(Math.log10(v)));const m=v/p;return (m<=1?1:m<=2?2:m<=2.5?2.5:m<=5?5:10)*p;}
+
+// vertical column chart; falls back to lollipop when there are many groups
+function columns(el,items,{color,fmtV=fmt,click,avg}={}){
+  if(!items.length){el.innerHTML=emptyMsg;return;}
+  if(items.length>12)return lollipop(el,items,{color,fmtV,click,avg});
+  const W=640,H=290,L=44,R=8,T=34,B=46,n=items.length;
+  const mx=niceMax(Math.max(...items.map(d=>d.v||0)));const bw=(W-L-R)/n,w=Math.min(46,bw*.62);
+  const Y=v=>H-B-(v/mx)*(H-T-B);const {hi,lo}=extremes(items.map(d=>d.v));
+  let s=`<svg viewBox="0 0 ${W} ${H}" width="100%" role="img">`;
+  [0,.25,.5,.75,1].forEach(f=>{const t=mx*f;s+=`<line x1="${L}" x2="${W-R}" y1="${Y(t)}" y2="${Y(t)}" stroke="var(--grid)"/><text x="${L-6}" y="${Y(t)+4}" text-anchor="end">${fmtV(t)}</text>`;});
+  items.forEach((d,i)=>{const x=L+bw*i+bw/2,y=Y(d.v||0),h=H-B-y;const c=i===hi?"var(--good)":i===lo?"var(--crit)":color;
+    const words=d.label.split(" ");const l1=words.length>1?words.slice(0,-1).join(" "):words[0],l2=words.length>1?words[words.length-1]:"";
+    s+=`<g class="${click?"click":""}" data-i="${i}" ${click?'tabindex="0" role="button"':""} data-tip="${esc(d.tip||"")}"><rect x="${x-bw/2}" y="${T-30}" width="${bw}" height="${H-T+30}" fill="transparent"/>
+      <path class="bar" d="M${x-w/2},${H-B} V${y+4} q0,-4 4,-4 h${w-8} q4,0 4,4 V${H-B} Z" fill="${c}"/>
+      <text class="val" x="${x}" y="${y-5}" text-anchor="middle">${fmtV(d.v)}</text>
+      ${i===hi?`<text class="hi" x="${x}" y="${y-19}" text-anchor="middle">▲ HIGHEST</text>`:i===lo?`<text class="lo" x="${x}" y="${y-19}" text-anchor="middle">▼ LOWEST</text>`:""}
+      <text x="${x}" y="${H-B+15}" text-anchor="middle">${esc(l1)}</text>${l2?`<text x="${x}" y="${H-B+28}" text-anchor="middle">${esc(l2)}</text>`:""}</g>`;});
+  if(avg!=null){const y=Y(avg);s+=`<line x1="${L}" x2="${W-R}" y1="${y}" y2="${y}" stroke="var(--muted)" stroke-dasharray="5 4"/><text x="${W-R}" y="${y-4}" text-anchor="end">Average ${fmtV(avg)}</text>`;}
+  s+=`<line x1="${L}" x2="${W-R}" y1="${H-B}" y2="${H-B}" stroke="var(--base)"/></svg>`;
+  el.innerHTML=s+hlLegend;bindClicks(el,"g[data-i]",items,click);
+}
+// lollipop (dot plot) with optional average marker
+function lollipop(el,items,{color,fmtV=fmt,click,avg,max}={}){
+  if(!items.length){el.innerHTML=emptyMsg;return;}
+  const mx=max??niceMax(Math.max(...items.map(d=>d.v||0)));const {hi,lo}=extremes(items.map(d=>d.v));
+  el.innerHTML=`<div class="lp" style="--lc:${color}">`+items.map((d,i)=>{const p=Math.max(0,Math.min(100,(d.v||0)/mx*100));const cls=i===hi?"hi":i===lo?"lo":"";
+    const dc=i===hi?"var(--good)":i===lo?"var(--crit)":color;
+    return `<div class="r ${cls}${click?" click":""}" data-i="${i}" ${click?'tabindex="0" role="button"':""} data-tip="${esc(d.tip||"")}"><div class="l" title="${esc(d.label)}">${esc(d.label)}</div>
+    <div class="t"><div class="stem" style="width:${p}%;background:${dc}"></div><div class="dot" style="left:${p}%;background:${dc}"></div>${avg!=null?`<div class="avg" style="left:${Math.min(100,avg/mx*100)}%"></div>`:""}</div>
+    <div class="v">${cls==="hi"?"▲ ":cls==="lo"?"▼ ":""}${fmtV(d.v)}</div></div>`;}).join("")+"</div>"+
+    `<div class="hl-legend"><span><i style="background:var(--good)"></i>Highest</span><span><i style="background:var(--crit)"></i>Lowest</span>${avg!=null?`<span>┆ Dashed line: average ${fmtV(avg)}</span>`:""}</div>`;
+  bindClicks(el,".r",items,click);
+}
+// donut with legend
+function donut(el,slices,center,sub){
+  const tot=slices.reduce((s,d)=>s+d.v,0);if(!tot){el.innerHTML=emptyMsg;return;}
+  const R=80,r=52,cx=90,cy=90;let a0=-Math.PI/2,s=`<svg viewBox="0 0 180 180" role="img">`;
+  const arc=(a,b)=>{const big=b-a>Math.PI?1:0,p=(t,rr)=>[cx+rr*Math.cos(t),cy+rr*Math.sin(t)];const [x1,y1]=p(a,R),[x2,y2]=p(b,R),[x3,y3]=p(b,r),[x4,y4]=p(a,r);return `M${x1},${y1} A${R},${R} 0 ${big} 1 ${x2},${y2} L${x3},${y3} A${r},${r} 0 ${big} 0 ${x4},${y4} Z`;};
+  slices.forEach(d=>{if(!d.v)return;const a1=a0+d.v/tot*Math.PI*2-(slices.filter(x=>x.v).length>1?0.02:0);
+    s+=d.v===tot?`<circle cx="${cx}" cy="${cy}" r="${(R+r)/2}" fill="none" stroke="${d.color}" stroke-width="${R-r}" data-tip="<b>${esc(d.label)}</b><br>${fmt(d.v)} (100%)"/>`:`<path d="${arc(a0,a1)}" fill="${d.color}" data-tip="<b>${esc(d.label)}</b><br>${fmt(d.v)} (${pct(d.v/tot)})"/>`;a0=a0+d.v/tot*Math.PI*2;});
+  s+=`<text class="val" x="${cx}" y="${cy+2}" text-anchor="middle" style="font-size:22px">${center}</text><text x="${cx}" y="${cy+20}" text-anchor="middle">${sub}</text></svg>`;
+  el.innerHTML=`<div class="donut">${s}<ul>${slices.map(d=>`<li data-tip="<b>${esc(d.label)}</b><br>${fmt(d.v)} (${pct(d.v/tot)})"><i style="background:${d.color}"></i><span>${esc(d.label)}</span><span class="n">${fmt(d.v)}</span><span class="p">${pct(d.v/tot)}</span></li>`).join("")}</ul></div>`;
+}
+// semicircle gauges
+function gauges(el,items){
+  el.innerHTML=items.map(g=>{const v=g.v==null?0:Math.max(0,Math.min(1,g.v));const R=60,cx=75,cy=72;
+    const p=t=>[cx-R*Math.cos(t*Math.PI),cy-R*Math.sin(t*Math.PI)];const [x1,y1]=p(0),[x2,y2]=p(1),[xv,yv]=p(v);
+    return `<div class="gauge" data-tip="<b>${esc(g.label)}</b><br>${esc(g.tip)}"><svg viewBox="0 0 150 86" width="100%" style="max-width:190px" role="img">
+      <path d="M${x1},${y1} A${R},${R} 0 0 1 ${x2},${y2}" fill="none" stroke="var(--grid)" stroke-width="14" stroke-linecap="round"/>
+      ${v>0?`<path d="M${x1},${y1} A${R},${R} 0 0 1 ${xv},${yv}" fill="none" stroke="${g.color}" stroke-width="14" stroke-linecap="round"/>`:""}
+      <text class="val" x="${cx}" y="${cy-4}" text-anchor="middle" style="font-size:22px">${pct(g.v)}</text></svg>
+      <div class="gl">${esc(g.label)}</div><div class="gs">${esc(g.tip)}</div></div>`;}).join("");
+}
+// heatmap scorecard: rows = groups, columns = rate measures
+function heatmap(el,G,cols,click){
+  if(!G.list.length){el.innerHTML=emptyMsg;return;}
+  const list=[...G.list].sort((a,b)=>a.label.localeCompare(b.label));
+  const ext=cols.map(c=>{const vals=list.map(g=>g.a[c.k]);const e=extremes(vals);const nums=vals.filter(v=>v!=null);return {...e,mn:Math.min(...nums),mx:Math.max(...nums)};});
+  el.innerHTML=`<table class="heat"><thead><tr><th>${G.key==="block"?"Block":"Cluster"}</th>${cols.map(c=>`<th class="num">${c.h}</th>`).join("")}</tr></thead><tbody>${
+    list.map((g,i)=>`<tr ${click?`data-i="${i}" tabindex="0" style="cursor:pointer"`:""}><td>${esc(g.label)}</td>${cols.map((c,j)=>{const v=g.a[c.k];const e=ext[j];
+      const t=v==null||e.mx===e.mn?.5:(v-e.mn)/(e.mx-e.mn);const mix=Math.round(12+t*78);const cls=i===e.hi?"hi":i===e.lo?"lo":"";
+      return `<td class="c ${cls}" style="background:color-mix(in srgb, ${c.color} ${mix}%, var(--surface));color:${mix>55?"#fff":"var(--ink)"}" data-tip="<b>${esc(g.label)}</b><br>${c.h}: ${c.f(v)}${cls?`<br>${cls==="hi"?"Highest":"Lowest"} in this view`:""}">${c.f(v)}${cls==="hi"?"<small>▲</small>":cls==="lo"?"<small>▼</small>":""}</td>`;}).join("")}</tr>`).join("")}</tbody></table>`;
+  bindClicks(el,"tr[data-i]",list,click);
+}
+// grouped columns (school type)
+function grouped(el,groupsArr,series){
+  const W=640,H=270,L=40,R=8,T=20,B=40;const mx=niceMax(Math.max(...groupsArr.flatMap(g=>series.map(s=>g.vals[s.k]||0))));
+  const Y=v=>H-B-(v/mx)*(H-T-B);const gw=(W-L-R)/groupsArr.length,bw=Math.min(40,(gw*.75)/series.length);
+  let s=`<svg viewBox="0 0 ${W} ${H}" width="100%" role="img">`;
+  [0,.25,.5,.75,1].forEach(f=>{const t=mx*f;s+=`<line x1="${L}" x2="${W-R}" y1="${Y(t)}" y2="${Y(t)}" stroke="var(--grid)"/><text x="${L-6}" y="${Y(t)+4}" text-anchor="end">${f1(t)}</text>`;});
+  groupsArr.forEach((g,gi)=>{const x0=L+gw*gi+gw/2-(bw*series.length+2*(series.length-1))/2;
+    series.forEach((se,si)=>{const v=g.vals[se.k];if(v==null)return;const x=x0+si*(bw+2),y=Y(v);
+      s+=`<g data-tip="<b>${esc(se.label)}</b><br>${esc(g.label)}: ${f1(v)}"><path d="M${x},${H-B} V${y+4} q0,-4 4,-4 h${bw-8} q4,0 4,4 V${H-B} Z" fill="${se.color}"/><text class="val" x="${x+bw/2}" y="${y-5}" text-anchor="middle">${f1(v)}</text></g>`;});
+    s+=`<text x="${L+gw*gi+gw/2}" y="${H-B+18}" text-anchor="middle">${esc(g.label)}</text>`;});
+  s+=`<line x1="${L}" x2="${W-R}" y1="${H-B}" y2="${H-B}" stroke="var(--base)"/></svg>`;
+  el.innerHTML=s+`<div class="hl-legend">${series.map(se=>`<span><i style="background:${se.color}"></i>${esc(se.label)}</span>`).join("")}</div>`;
+}
+
+function kpis(a){
+  const k=[
+    ["Schools reported",fmt(a.n),`${fmt(a.enr)} students enrolled`,"var(--c1)"],
+    ["Parents attended",fmt(a.par),`${f1(a.parAvg)} per school · ${a.parR==null?"–":Math.round(a.parR)} per 100 students`,"var(--c1)"],
+    ["SDMC members attended",fmt(a.sdmc),`${f1(a.sdmcAvg)} per school`,"var(--c2)"],
+    ["Learning corners",fmt(a.lc),`${f1(a.lcAvg)} per school · ${pct(a.lcR)} of students`,"var(--c7)"],
+    ["Student attendance",pct(a.attR),`${fmt(a.att)} students present`,"var(--c5)"],
+    ["Preparatory meeting",pct(a.preR),`${fmt(a.pre)} schools held one`,"var(--c3)"],
+    ["Community jatha",pct(a.jatR),`${fmt(a.jat)} schools held one`,"var(--c4)"],
+    ["PTM photo uploaded",pct(a.ppR),`${fmt(a.pp)} of ${fmt(a.n)} reports`,"var(--c6)"]];
+  document.getElementById("kpis").innerHTML=k.map(([l,v,s,c])=>`<div class="kpi" style="--kc:${c}"><div class="lab">${l}</div><div class="val">${v}</div><div class="sub">${s}</div></div>`).join("");
+}
+function extremesCard(G){
+  const unit=G.key==="block"?"blocks":"clusters";
+  document.getElementById("hExt").textContent=`Highest and lowest ${unit}`;
+  const M=[["Parents attended","par",fmt],["Parents per school","parAvg",f1],["Parents per 100 students","parR",fmt],["SDMC members per school","sdmcAvg",f1],["Learning corners","lc",fmt],["Learning corners per school","lcAvg",f1],["Student attendance","attR",pct],["Community jatha held","jatR",pct]];
+  if(G.list.length<2){document.getElementById("cExt").innerHTML=`<div class="empty">Only one ${unit.slice(0,-1)} in this view. Widen the filters to compare.</div>`;return;}
+  document.getElementById("cExt").innerHTML=M.map(([t,k,f])=>{const e=extremes(G.list.map(g=>g.a[k]));if(e.hi<0)return "";const h=G.list[e.hi],l=G.list[e.lo];
+    return `<div class="m"><div class="mt">${t}</div><div class="row"><span><span class="tag hi">▲ HIGHEST</span>${esc(h.label)}</span><b>${f(h.a[k])}</b></div><div class="row"><span><span class="tag lo">▼ LOWEST</span>${esc(l.label)}</span><b>${f(l.a[k])}</b></div></div>`;}).join("");
+}
+
+function scatter(el,rows){
+  const pts=rows.filter(o=>o.enr!=null&&o.par!=null);
+  if(!pts.length){el.innerHTML=emptyMsg;return;}
+  const W=900,H=340,L=48,R=16,T=12,B=36;
+  const xm=niceMax(Math.max(...pts.map(p=>p.enr))),ym=niceMax(Math.max(...pts.map(p=>p.par)));
+  const X=v=>L+v/xm*(W-L-R),Y=v=>H-B-v/ym*(H-T-B);
+  let s=`<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Scatter of enrolment against parents attended">`;
+  [0,.25,.5,.75,1].forEach(f=>{const t=Math.round(ym*f);s+=`<line x1="${L}" x2="${W-R}" y1="${Y(t)}" y2="${Y(t)}" stroke="var(--grid)"/><text x="${L-6}" y="${Y(t)+4}" text-anchor="end">${t}</text>`;});
+  [0,.25,.5,.75,1].forEach(f=>{const t=Math.round(xm*f);s+=`<text x="${X(t)}" y="${H-B+16}" text-anchor="middle">${t}</text>`;});
+  s+=`<line x1="${L}" x2="${W-R}" y1="${H-B}" y2="${H-B}" stroke="var(--base)"/>`;
+  const lm=Math.min(xm,ym);s+=`<line x1="${X(0)}" y1="${Y(0)}" x2="${X(lm)}" y2="${Y(lm)}" stroke="var(--muted)" stroke-dasharray="4 4"/>`;
+  s+=`<text x="${(L+W-R)/2}" y="${H-4}" text-anchor="middle">Students enrolled</text><text transform="translate(12 ${(T+H-B)/2}) rotate(-90)" text-anchor="middle">Parents attended</text>`;
+  const top=pts.reduce((a,b)=>b.par>a.par?b:a);
+  pts.forEach(p=>s+=`<circle cx="${X(p.enr).toFixed(1)}" cy="${Y(p.par).toFixed(1)}" r="${p===top?6:4.5}" fill="${TYPE_COLOR[p.type]||"var(--c1)"}" fill-opacity="${p===top?1:.6}" stroke="var(--surface)" stroke-width="1" data-tip="<b>${esc(p.school)}</b><br>${esc(p.cluster)}, ${esc(bname(p.block))}<br>${TYPE_LABEL[p.type]||""}<br>Enrolled ${p.enr} · Parents ${p.par} · SDMC ${p.sdmc??"–"}"/>`);
+  s+=`<text class="hi" x="${Math.min(X(top.enr)+9,W-R-120)}" y="${Y(top.par)+4}">▲ HIGHEST: ${esc(top.school.slice(0,24))} (${top.par})</text>`;
+  el.innerHTML=s+"</svg>"+`<div class="hl-legend">${Object.keys(TYPE_LABEL).map(t=>`<span><i style="background:${TYPE_COLOR[t]};border-radius:50%"></i>${TYPE_LABEL[t]}</span>`).join("")}</div>`;
+}
+
+const FLAGS=[
+  {id:"turnout",lab:"Low parent turnout",d:"Parents under 25% of enrolment",test:o=>o.par!=null&&o.enr>=8&&o.par<o.enr*.25,c:"c"},
+  {id:"sdmc0",lab:"No SDMC member",d:"SDMC attendance recorded as 0",test:o=>o.sdmc===0,c:"c"},
+  {id:"lc0",lab:"No learning corners",d:"Learning corners recorded as 0",test:o=>o.lc===0,c:"c"},
+  {id:"pre",lab:"No preparatory meeting",d:"Answered No",test:o=>o.pre===0,c:"w"},
+  {id:"jatha",lab:"No community jatha",d:"Answered No",test:o=>o.jatha===0,c:"w"},
+  {id:"photo",lab:"No PTM photo",d:"Photo link missing",test:o=>!o.pp,c:"w"},
+  {id:"data",lab:"Check data",d:"Invalid number or value above enrolment",test:o=>o.bad||o.attHigh||o.lcHigh,c:"w"}];
+
+function sortRows(arr,{k,d}){return arr.sort((a,b)=>{const x=a[k],y=b[k];if(x==null)return 1;if(y==null)return -1;return (typeof x==="string"?x.localeCompare(y):x-y)*d;});}
+function table(el,cols,rows,sortState,onSort){
+  el.innerHTML=`<table><thead><tr>${cols.map(c=>`<th class="${c.num?"num":""}"><button type="button" data-k="${c.k}" ${sortState.k===c.k?`data-dir="${sortState.d>0?"▲":"▼"}"`:""}>${c.h}</button></th>`).join("")}</tr></thead><tbody>${
+    rows.map(r=>`<tr>${cols.map(c=>`<td class="${c.num?"num":""} ${c.cls||""}">${c.f?c.f(r):esc(r[c.k]??"–")}</td>`).join("")}</tr>`).join("")}</tbody></table>`;
+  el.querySelectorAll("th button").forEach(b=>b.onclick=()=>{const k=b.dataset.k;sortState.d=sortState.k===k?-sortState.d:(cols.find(c=>c.k===k).num?-1:1);sortState.k=k;onSort();});
+}
+function renderGroupTable(G,tot){
+  document.getElementById("hGroup").textContent=G.key==="block"?"Block summary":`Cluster summary, ${bname(S.block)}`;
+  const rows=G.list.map(g=>({name:g.label,n:g.a.n,enr:g.a.enr,par:g.a.par,parAvg:g.a.parAvg,parR:g.a.parR,sdmc:g.a.sdmc,sdmcAvg:g.a.sdmcAvg,lc:g.a.lc,lcAvg:g.a.lcAvg,attR:g.a.attR,pre:g.a.preR,jat:g.a.jatR}));
+  const cols=[{k:"name",h:G.key==="block"?"Block":"Cluster"},{k:"n",h:"Schools",num:1,f:r=>fmt(r.n)},{k:"enr",h:"Enrolled",num:1,f:r=>fmt(r.enr)},{k:"par",h:"Parents",num:1,f:r=>fmt(r.par)},{k:"parAvg",h:"Parents / school",num:1,f:r=>f1(r.parAvg)},{k:"parR",h:"Parents / 100 students",num:1,f:r=>fmt(r.parR)},{k:"sdmc",h:"SDMC",num:1,f:r=>fmt(r.sdmc)},{k:"sdmcAvg",h:"SDMC / school",num:1,f:r=>f1(r.sdmcAvg)},{k:"lc",h:"Learning corners",num:1,f:r=>fmt(r.lc)},{k:"lcAvg",h:"LC / school",num:1,f:r=>f1(r.lcAvg)},{k:"attR",h:"Student attendance",num:1,f:r=>pct(r.attR)},{k:"pre",h:"Prep meeting",num:1,f:r=>pct(r.pre)},{k:"jat",h:"Jatha",num:1,f:r=>pct(r.jat)}];
+  const draw=()=>{table(document.getElementById("tGroup"),cols,sortRows(rows,S.sortG),S.sortG,draw);
+    const tb=document.querySelector("#tGroup tbody");if(tb&&rows.length)tb.insertAdjacentHTML("beforeend",`<tr style="font-weight:700"><td>Total</td><td class="num">${fmt(tot.n)}</td><td class="num">${fmt(tot.enr)}</td><td class="num">${fmt(tot.par)}</td><td class="num">${f1(tot.parAvg)}</td><td class="num">${fmt(tot.parR)}</td><td class="num">${fmt(tot.sdmc)}</td><td class="num">${f1(tot.sdmcAvg)}</td><td class="num">${fmt(tot.lc)}</td><td class="num">${f1(tot.lcAvg)}</td><td class="num">${pct(tot.attR)}</td><td class="num">${pct(tot.preR)}</td><td class="num">${pct(tot.jatR)}</td></tr>`);};
+  draw();
+}
+function renderSchools(rows){
+  const fs=document.getElementById("flagsum");
+  fs.innerHTML=FLAGS.map(f=>`<button type="button" data-f="${f.id}" aria-pressed="${S.flag===f.id}"><span class="fv">${fmt(rows.filter(f.test).length)}</span><span class="fl">${f.lab}<br><span style="color:var(--muted)">${f.d}</span></span></button>`).join("");
+  fs.querySelectorAll("button").forEach(b=>b.onclick=()=>{S.flag=S.flag===b.dataset.f?null:b.dataset.f;renderSchools(filtered());});
+  const q=S.q.trim().toLowerCase();
+  const list=rows.filter(o=>(!S.flag||FLAGS.find(f=>f.id===S.flag).test(o))&&(!q||(o.school+" "+o.udise+" "+o.cluster+" "+o.block).toLowerCase().includes(q)));
+  document.getElementById("schoolCount").textContent=`${fmt(list.length)} schools shown`;
+  const cols=[{k:"school",h:"School",cls:"school",f:o=>`${esc(o.school)}<br><span style="color:var(--muted);font-size:11.5px">${esc(o.udise)} · ${TYPE_LABEL[o.type]||o.type}</span>`},{k:"cluster",h:"Cluster",f:o=>`${esc(o.cluster)}<br><span style="color:var(--muted);font-size:11.5px">${esc(bname(o.block))}</span>`},{k:"resp",h:"Visited by"},{k:"enr",h:"Enrolled",num:1},{k:"att",h:"Students present",num:1},{k:"par",h:"Parents",num:1},{k:"sdmc",h:"SDMC",num:1},{k:"lc",h:"Learning corners",num:1},
+    {k:"flags",h:"Flags",f:o=>{const fl=FLAGS.filter(f=>f.test(o));return fl.length?fl.map(f=>`<span class="pill ${f.c}">${f.lab}</span>`).join(""):'<span class="pill ok">✓ No flags</span>';}}];
+  const draw=()=>table(document.getElementById("tSchools"),cols,sortRows(list,S.sortS),S.sortS,draw);
+  draw();
+}
+
+function fillSelect(id,allLabel,items,cur,labelFn=v=>v){
+  const sel=document.getElementById(id);
+  sel.innerHTML=`<option value="">${allLabel}</option>`+items.map(([v,n])=>`<option value="${esc(v)}"${v===cur?" selected":""}>${esc(labelFn(v))} (${fmt(n)})</option>`).join("");
+  sel.classList.toggle("on",!!cur);
+}
+
+function render(){
+  save();
+  fillSelect("fBlock","All blocks",countBy(filtered("block"),"block"),S.block,bname);
+  const cl=countBy(filtered("cluster"),"cluster").sort((a,b)=>a[0].localeCompare(b[0]));
+  if(S.cluster&&!cl.some(c=>c[0]===S.cluster))S.cluster=null;
+  fillSelect("fCluster",`All clusters (${cl.length})`,cl,S.cluster);
+  fillSelect("fResp","All respondents",countBy(filtered("resp"),"resp"),S.resp);
+  fillSelect("fType","All school types",["LPS","HPS","HS"].map(t=>[t,filtered("type").filter(o=>o.type===t).length]),S.type,t=>TYPE_LABEL[t]);
+
+  const rows=filtered(), a=agg(rows), G=groups(rows);
+  const parts=[S.block&&bname(S.block),S.cluster,S.resp,S.type&&TYPE_LABEL[S.type]].filter(Boolean);
+  document.getElementById("status").innerHTML=parts.length?`Showing <b>${esc(parts.join(" · "))}</b>`:"Showing <b>all of Mysuru district</b>";
+  kpis(a);
+  extremesCard(G);
+  gauges(document.getElementById("cGauges"),[
+    {label:"Preparatory meeting held",v:a.preR,tip:`${fmt(a.pre)} of ${fmt(a.preA)} schools`,color:"var(--c3)"},
+    {label:"Community jatha held",v:a.jatR,tip:`${fmt(a.jat)} of ${fmt(a.jatA)} schools`,color:"var(--c4)"},
+    {label:"Student attendance",v:a.attR,tip:`${fmt(a.att)} of ${fmt(a.enrA)} students`,color:"var(--c5)"},
+    {label:"PTM photo uploaded",v:a.ppR,tip:`${fmt(a.pp)} of ${fmt(a.n)} reports`,color:"var(--c7)"}]);
+
+  const unit=G.key==="block"?"block":"cluster";
+  const pick=S.block?null:(d=>{S.block=d.k;render();});
+  const gl=G.list, drill=S.block?"":" Click a block to see its clusters.";
+  const it=(sorter,val,tipFn)=>[...gl].sort(sorter).map(g=>({k:g.k,label:g.label,v:val(g.a),tip:tipFn(g)}));
+  document.getElementById("dParents").textContent=`Total parents present at the PTM, by ${unit}.${drill}`;
+  columns(document.getElementById("cParents"),it((x,y)=>y.a.par-x.a.par,a=>a.par,g=>`<b>${esc(g.label)}</b><br>${fmt(g.a.par)} parents across ${g.a.n} schools<br>${f1(g.a.parAvg)} per school`),{color:"var(--c1)",click:pick});
+  document.getElementById("dLC").textContent=`Students who set up a learning corner at home, by ${unit}.${drill}`;
+  lollipop(document.getElementById("cLC"),it((x,y)=>y.a.lc-x.a.lc,a=>a.lc,g=>`<b>${esc(g.label)}</b><br>${fmt(g.a.lc)} learning corners<br>${pct(g.a.lcR)} of enrolled students · ${f1(g.a.lcAvg)} per school`),{color:"var(--c7)",click:pick});
+  document.getElementById("dSDMC").textContent=`Average SDMC members present per school, by ${unit}. Dashed line is the overall average.`;
+  columns(document.getElementById("cSDMC"),it((x,y)=>(y.a.sdmcAvg||0)-(x.a.sdmcAvg||0),a=>a.sdmcAvg,g=>`<b>${esc(g.label)}</b><br>${fmt(g.a.sdmc)} SDMC members in ${g.a.n} schools<br>${f1(g.a.sdmcAvg)} per school`),{color:"var(--c2)",fmtV:f1,click:pick,avg:a.sdmcAvg});
+  const B=[["None (0)",v=>v===0,"var(--crit)"],["1–4",v=>v>=1&&v<=4,"var(--q1)"],["5–9",v=>v>=5&&v<=9,"var(--q2)"],["10–14",v=>v>=10&&v<=14,"var(--q3)"],["15–19",v=>v>=15&&v<=19,"var(--q4)"],["20 or more",v=>v>=20,"var(--q5)"]];
+  const sd=rows.filter(o=>o.sdmc!=null);
+  donut(document.getElementById("cSDMCdist"),B.map(([l,t,c])=>({label:`${l} members`,v:sd.filter(o=>t(o.sdmc)).length,color:c})),f1(a.sdmcAvg),"avg per school");
+  document.getElementById("dAtt").textContent=`Students present as a share of enrolment, by ${unit}. Dashed line is the overall rate.`;
+  lollipop(document.getElementById("cAtt"),it((x,y)=>(y.a.attR||0)-(x.a.attR||0),a=>a.attR,g=>`<b>${esc(g.label)}</b><br>${fmt(g.a.att)} of ${fmt(g.a.enrA)} students present`),{color:"var(--c5)",fmtV:pct,max:1,avg:a.attR,click:pick});
+  document.getElementById("dRatio").textContent=`Parents present for every 100 enrolled students, by ${unit}. Higher means more families were reached.`;
+  columns(document.getElementById("cRatio"),it((x,y)=>(y.a.parR||0)-(x.a.parR||0),a=>a.parR,g=>`<b>${esc(g.label)}</b><br>${fmt(g.a.parP)} parents for ${fmt(g.a.enrP)} enrolled students`),{color:"var(--c4)",click:pick,avg:a.parR});
+  document.getElementById("dHeat").textContent=`Darker cells mean a higher rate within each column. ▲ marks the highest and ▼ the lowest ${unit}.${drill}`;
+  heatmap(document.getElementById("cHeat"),G,[
+    {k:"preR",h:"Prep meeting",f:pct,color:"var(--c3)"},{k:"jatR",h:"Community jatha",f:pct,color:"var(--c4)"},{k:"attR",h:"Student attendance",f:pct,color:"var(--c5)"},
+    {k:"lcR",h:"Learning corners (% of students)",f:pct,color:"var(--c7)"},{k:"ppR",h:"PTM photo",f:pct,color:"var(--c1)"},{k:"jpR",h:"Jatha photo",f:pct,color:"var(--c2)"}],pick);
+  const rc=countBy(rows,"resp");const top=rc.slice(0,6),rest=rc.slice(6).reduce((s,x)=>s+x[1],0);
+  const pal=["var(--c1)","var(--c2)","var(--c3)","var(--c4)","var(--c5)","var(--c7)","var(--na)"];
+  donut(document.getElementById("cResp"),[...top.map(([r,n],i)=>({label:r,v:n,color:pal[i]})),...(rest?[{label:"Other officials",v:rest,color:pal[6]}]:[])],fmt(rows.length),"reports");
+  const ty=["LPS","HPS","HS"].map(t=>({t,a:agg(rows.filter(o=>o.type===t))})).filter(x=>x.a.n);
+  if(!ty.length)document.getElementById("cType").innerHTML=emptyMsg;
+  else grouped(document.getElementById("cType"),[{label:"Parents / school",k:"parAvg"},{label:"SDMC / school",k:"sdmcAvg"},{label:"Learning corners / school",k:"lcAvg"}].map(m=>({label:m.label,vals:Object.fromEntries(ty.map(x=>[x.t,x.a[m.k]]))})),ty.map(x=>({k:x.t,label:`${TYPE_LABEL[x.t]} (${x.a.n})`,color:TYPE_COLOR[x.t]})));
+  const tp=TOPICS.map((t,i)=>{const n=rows.filter(o=>o.tb&(1<<i)).length;return {t,n,v:rows.length?n/rows.length:null};}).sort((x,y)=>(y.v||0)-(x.v||0));
+  const te=extremes(tp.map(x=>x.v));
+  document.getElementById("cTopics").innerHTML=rows.length?`<div class="hb">`+tp.map((x,i)=>`<div class="r" data-tip="<b>${esc(x.t[0])}</b><br>${fmt(x.n)} of ${fmt(rows.length)} PTMs"><div class="l">${i===te.hi?'<span class="tag hi">▲ MOST</span>':i===te.lo?'<span class="tag lo">▼ LEAST</span>':""}${esc(x.t[0])}<small>${x.t[1]}</small></div><div class="t"><div class="b" style="width:${(x.v||0)*100}%;background:${i===te.hi?"var(--good)":i===te.lo?"var(--crit)":"var(--c3)"}"></div></div><div class="v">${pct(x.v)}</div></div>`).join("")+"</div>":emptyMsg;
+  scatter(document.getElementById("cScatter"),rows);
+  renderGroupTable(G,a);
+  renderSchools(rows);
+}
+document.getElementById("fBlock").onchange=e=>{S.block=e.target.value||null;S.cluster=null;render();};
+document.getElementById("fCluster").onchange=e=>{S.cluster=e.target.value||null;render();};
+document.getElementById("fResp").onchange=e=>{S.resp=e.target.value||null;render();};
+document.getElementById("fType").onchange=e=>{S.type=e.target.value||null;render();};
+document.getElementById("reset").onclick=()=>{S.block=S.resp=S.type=S.cluster=S.flag=null;S.q="";document.getElementById("q").value="";render();};
+document.getElementById("q").oninput=e=>{S.q=e.target.value;renderSchools(filtered());};
+document.getElementById("totalNote").textContent=`${fmt(ROWS.length)} school reports · ${new Set(ROWS.map(o=>o.block)).size} blocks · ${new Set(ROWS.map(o=>o.block+o.cluster)).size} clusters`;
+render();
+</script>
+</body>
+</html>

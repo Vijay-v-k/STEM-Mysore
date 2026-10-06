@@ -313,3 +313,9 @@ footer { text-align: center; padding: 20px; font-size: 12px; color: var(--muted)
 .science-table th { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: .03em; }
 .science-table tbody tr:last-child td { border-bottom: none; }
 .science-table tbody tr:hover { background: var(--bg); }
+
+/* ---------- PTM Review tab ---------- */
+.ptm-frame { display: block; width: 100%; height: 2400px; border: 0; background: transparent; color-scheme: normal; }
+.ptm-open { font-size: 12.5px; margin-top: 8px; text-align: right; }
+.ptm-open a { color: var(--primary-light); }
+@media (max-width: 760px) { .tabs { overflow-x: auto; max-width: 100%; } .tab-btn { white-space: nowrap; } }

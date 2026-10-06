@@ -7,7 +7,7 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎓</text></svg>" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=3" />
+  <link rel="stylesheet" href="css/style.css?v=4" />
 </head>
 <body>
   <header class="topbar">
@@ -23,6 +23,7 @@
       <button class="tab-btn" data-tab="team">Team &amp; KPIs</button>
       <button class="tab-btn" data-tab="programs">School Programs</button>
       <button class="tab-btn" data-tab="science">Science Activities</button>
+      <button class="tab-btn" data-tab="ptm">PTM Review</button>
     </nav>
   </header>
 
@@ -170,6 +171,12 @@
         </table>
       </div>
     </section>
+
+    <!-- PTM REVIEW TAB: the standalone dashboard in ptm/ shown in a frame so its styles stay separate -->
+    <section id="tab-ptm" class="tab-panel">
+      <iframe id="ptmFrame" class="ptm-frame" src="ptm/index.html?v=1" title="PTM Review dashboard" loading="eager"></iframe>
+      <p class="muted ptm-open"><a href="ptm/" target="_blank" rel="noopener">Open the PTM dashboard on its own page ↗</a></p>
+    </section>
   </main>
 
   <footer>
@@ -189,5 +196,6 @@
   <script src="js/data.js?v=2"></script>
   <script src="js/app.js?v=3"></script>
   <script src="js/science.js?v=1"></script>
+  <script src="js/ptm-embed.js?v=1"></script>
 </body>
 </html>
