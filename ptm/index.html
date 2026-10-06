@@ -182,6 +182,7 @@ html.embedded .filters{position:static}
     <div class="card wide"><h2>District at a glance</h2><p class="desc">Share of reporting schools, under the current filters.</p><div class="gauges" id="cGauges"></div></div>
     <div class="card"><h2>Parents who attended</h2><p class="desc" id="dParents"></p><div id="cParents"></div></div>
     <div class="card"><h2>Learning corners set up</h2><p class="desc" id="dLC"></p><div id="cLC"></div></div>
+    <div class="card wide"><h2>SDMC members who attended</h2><p class="desc" id="dSDMCtot"></p><div id="cSDMCtot"></div></div>
     <div class="card"><h2>SDMC members per school</h2><p class="desc" id="dSDMC"></p><div id="cSDMC"></div></div>
     <div class="card"><h2>SDMC attendance spread</h2><p class="desc">Schools grouped by how many SDMC members were present.</p><div id="cSDMCdist"></div></div>
     <div class="card"><h2>Student attendance on PTM day</h2><p class="desc" id="dAtt"></p><div id="cAtt"></div></div>
@@ -279,10 +280,10 @@ function bindClicks(el,sel,items,click){if(!click)return;el.querySelectorAll(sel
 function niceMax(v){if(!v||v<=0)return 1;const p=Math.pow(10,Math.floor(Math.log10(v)));const m=v/p;return (m<=1?1:m<=2?2:m<=2.5?2.5:m<=5?5:10)*p;}
 
 // vertical column chart; falls back to lollipop when there are many groups
-function columns(el,items,{color,fmtV=fmt,click,avg}={}){
+function columns(el,items,{color,fmtV=fmt,click,avg,wide}={}){
   if(!items.length){el.innerHTML=emptyMsg;return;}
   if(items.length>12)return lollipop(el,items,{color,fmtV,click,avg});
-  const W=640,H=290,L=44,R=8,T=34,B=46,n=items.length;
+  const W=wide?1240:640,H=290,L=44,R=8,T=34,B=46,n=items.length;
   const mx=niceMax(Math.max(...items.map(d=>d.v||0)));const bw=(W-L-R)/n,w=Math.min(46,bw*.62);
   const Y=v=>H-B-(v/mx)*(H-T-B);const {hi,lo}=extremes(items.map(d=>d.v));
   let s=`<svg viewBox="0 0 ${W} ${H}" width="100%" role="img">`;
@@ -464,6 +465,8 @@ function render(){
   columns(document.getElementById("cParents"),it((x,y)=>y.a.par-x.a.par,a=>a.par,g=>`<b>${esc(g.label)}</b><br>${fmt(g.a.par)} parents across ${g.a.n} schools<br>${f1(g.a.parAvg)} per school`),{color:"var(--c1)",click:pick});
   document.getElementById("dLC").textContent=`Students who set up a learning corner at home, by ${unit}.${drill}`;
   lollipop(document.getElementById("cLC"),it((x,y)=>y.a.lc-x.a.lc,a=>a.lc,g=>`<b>${esc(g.label)}</b><br>${fmt(g.a.lc)} learning corners<br>${pct(g.a.lcR)} of enrolled students · ${f1(g.a.lcAvg)} per school`),{color:"var(--c7)",click:pick});
+  document.getElementById("dSDMCtot").textContent=`Total SDMC members present at the PTM, by ${unit}.${drill}`;
+  columns(document.getElementById("cSDMCtot"),it((x,y)=>y.a.sdmc-x.a.sdmc,a=>a.sdmc,g=>{const rs=rows.filter(o=>o[G.key]===g.k&&o.sdmc!=null);const w=rs.filter(o=>o.sdmc>0).length;return `<b>${esc(g.label)}</b><br>${fmt(g.a.sdmc)} SDMC members across ${g.a.n} schools<br>${f1(g.a.sdmcAvg)} per school · ${fmt(w)} of ${fmt(rs.length)} schools had at least one`;}),{color:"var(--c2)",click:pick,wide:true});
   document.getElementById("dSDMC").textContent=`Average SDMC members present per school, by ${unit}. Dashed line is the overall average.`;
   columns(document.getElementById("cSDMC"),it((x,y)=>(y.a.sdmcAvg||0)-(x.a.sdmcAvg||0),a=>a.sdmcAvg,g=>`<b>${esc(g.label)}</b><br>${fmt(g.a.sdmc)} SDMC members in ${g.a.n} schools<br>${f1(g.a.sdmcAvg)} per school`),{color:"var(--c2)",fmtV:f1,click:pick,avg:a.sdmcAvg});
   const B=[["None (0)",v=>v===0,"var(--crit)"],["1–4",v=>v>=1&&v<=4,"var(--q1)"],["5–9",v=>v>=5&&v<=9,"var(--q2)"],["10–14",v=>v>=10&&v<=14,"var(--q3)"],["15–19",v=>v>=15&&v<=19,"var(--q4)"],["20 or more",v=>v>=20,"var(--q5)"]];
